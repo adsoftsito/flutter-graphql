@@ -1,21 +1,73 @@
 class MusicMateQueries {
   String createAccount() {
-    // TODO: implement createAccount
-    throw UnimplementedError();
-  } 
-  
+    return """
+    mutation createUser(\$name: String!, \$googleId: String!, \$imageUrl: String!, \$favouriteArtists: [ID]){
+      createUser(name: \$name, googleId: \$googleId, imageUrl: \$imageUrl, favouriteArtists: \$favouriteArtists){
+        user{
+          name
+          imageUrl
+          favouriteArtists {
+            name
+            description
+            imageUrl
+          }
+        }
+      }
+    }""";
+  }
+
   String updateUser() {
-    // TODO: implement updateUser
-    throw UnimplementedError();
+    return """
+    mutation UpdateUser(\$name: String, \$googleId: String!, \$imageUrl: String, \$favouriteArtists: [ID]){
+        updateUser(name: \$name, googleId: \$googleId, imageUrl: \$imageUrl, favouriteArtists: \$favouriteArtists){
+          user{
+            name
+            imageUrl
+            favouriteArtists {
+              name
+              description
+              imageUrl
+            }
+          }
+        }
+    }
+    """;
   }
 
   String fetchAllArtist() {
     // TODO: implement fetchAllArtist
-    throw UnimplementedError();
+    return """
+    query {
+      allArtists {
+            id
+            name
+            imageUrl
+            description
+        }
+    }
+    """;
   }
 
   String fetchUserInfo() {
-    // TODO: implement fetchUserInfo
-    throw UnimplementedError();
+    return """
+    query UserInfo(\$googleId: String!){
+
+    userInfo(googleId: \$googleId){
+       name
+       imageUrl
+       favouriteArtists {
+         name
+         imageUrl
+         description
+       }
+     }
+    
+     musicMates(googleId: \$googleId){
+       name
+       imageUrl
+     }
+   
+    }
+   """;
   }
 }

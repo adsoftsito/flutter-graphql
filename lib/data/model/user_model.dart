@@ -20,4 +20,22 @@ class UserModel {
           ArtistModel.dummy(),
           ArtistModel.dummy(),
         ];
+
+  UserModel.fromJson(Map<String, dynamic> data)
+      : name = data['name'],
+        imageUrl = data['imageUrl'],
+        favouriteArtist = data['favouriteArtists'] == null
+            ? []
+            : (data['favouriteArtists'] as List<dynamic>?)
+                ?.map((e) => ArtistModel.fromJson(e))
+                .toList();
+}
+
+class UserList {
+  final List<UserModel> users;
+
+  UserList.musicMatesJson(Map<String, dynamic> data)
+      : users = (data["musicMates"] as List)
+            .map((e) => UserModel.fromJson(e))
+            .toList();
 }

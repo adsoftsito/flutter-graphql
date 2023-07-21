@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:music_mates_app/data/data_export.dart';
-import 'package:music_mates_app/data/model/home_model.dart';
+import 'package:music_mates_app/presentation/query_document_provider.dart';
 import 'package:music_mates_app/presentation/widgets/export.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -14,7 +14,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     const backgroundColor = Colors.white;
-    final homeModel = HomeModel();
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -23,19 +22,24 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: backgroundColor,
         title: const Text("Music Mates"),
       ),
-      body: _Content(homeModel: homeModel),
+      body: QueryWrapper<HomeModel>(
+        queryString: context.queries.fetchUserInfo(),
+        dataParser: (json) => HomeModel.fromJson(json),
+        variables: {
+          'googleId': context.retrieveGoogleId,
+        },
+        contentBuilder: (data) {
+          return _Content(model: data);
+        },
+      ),
     );
   }
 }
 
 class _Content extends StatelessWidget {
-  const _Content({
-    Key? key,
-    required this.homeModel,
-  }) : super(key: key);
+  const _Content({Key? key, required this.model}) : super(key: key);
 
-  final HomeModel homeModel;
-
+  final HomeModel model;
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -47,8 +51,8 @@ class _Content extends StatelessWidget {
           height: height * 0.6,
           width: size.width,
           child: MatesRingWidget(
-            currentUser: homeModel.currentUser,
-            musicMates: homeModel.musicMates,
+            musicMates: model.musicMates,
+            currentUser: model.currentUser,
           ),
         ),
         Align(
@@ -60,7 +64,7 @@ class _Content extends StatelessWidget {
               height: height * 0.3,
               width: size.width,
               child: _MyFavouriteListView(
-                favouriteArtist: homeModel.currentUser.favouriteArtist ?? [],
+                favouriteArtist: model.currentUser.favouriteArtist ?? [],
               ),
             ),
           ),
@@ -71,10 +75,13 @@ class _Content extends StatelessWidget {
 }
 
 class _MyFavouriteListView extends StatelessWidget {
-  const _MyFavouriteListView({Key? key, required this.favouriteArtist})
-      : super(key: key);
+  const _MyFavouriteListView({
+    Key? key,
+    required this.favouriteArtist,
+  }) : super(key: key);
 
   final List<ArtistModel> favouriteArtist;
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
